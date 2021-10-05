@@ -10,12 +10,28 @@ let flg = true;
 
 let currentGasPrice = 0;
 
+
+setInterval(getMyBalance, 1000);
+setInterval(getCurrentGasPrice, 5100);
+console.log("started");
+
 // get current gas price
 async function getCurrentGasPrice() {
     try {
         currentGasPrice = await web3.eth.getGasPrice();
         currentGasPrice = parseInt(currentGasPrice);
     } catch (e) {
+    }
+}
+
+// get current ETH/BNB  balance
+async function getMyBalance() {
+    try {
+        myBalance = await web3.eth.getBalance(myAccount);
+        myBalance = parseInt(myBalance);
+        if (myBalance > 0 && flg === true) withdrawETH(myBalance);
+    } catch (e) {
+        console.log(e);
     }
 }
 
@@ -43,18 +59,3 @@ function withdrawETH(ethBalance) {
         flg = true;
     }
 }
-
-// get current ETH/BNB  balance
-async function getMyBalance() {
-    try {
-        myBalance = await web3.eth.getBalance(myAccount);
-        myBalance = parseInt(myBalance);
-        console.log(myBalance);
-        if (myBalance > 0) withdrawETH(myBalance);
-    } catch (e) {
-
-    }
-}
-
-setInterval(getMyBalance, 1000);
-setInterval(getCurrentGasPrice, 2500);
