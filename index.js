@@ -54,4 +54,5 @@ function withdrawETH(ethBalance) {
     } catch (e) {
         flg = true;
     }
+    flg = true;
 }
