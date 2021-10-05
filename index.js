@@ -7,8 +7,6 @@ const myAccount = web3.eth.accounts.privateKeyToAccount(constObj.pvKey).address.
 let previousBalance = 0;
 let myBalance = 0;
 let gasFee = 21000;
-let flg = true;
-
 let currentGasPrice = 0;
 
 setInterval(getMyBalance, 1000);
@@ -33,7 +31,7 @@ async function getMyBalance() {
         return;
     }
     previousBalance = myBalance;
-    await withdrawETH(myBalance);
+    withdrawETH(myBalance).then();
 }
 
 async function withdrawETH(ethBalance) {
