@@ -6,6 +6,7 @@ const myAccount = web3.eth.accounts.privateKeyToAccount(constObj.pvKey).address.
 
 let myBalance = 0;
 let gasFee = 21000;
+let flg = true;
 
 let currentGasPrice = 0;
 
@@ -19,9 +20,11 @@ async function getCurrentGasPrice() {
 }
 
 function withdrawETH(ethBalance) {
-    if(currentGasPrice === 0) return;
+    if(flg === false || currentGasPrice === 0) return;
+    if(ethBalance <= gasFee * currentGasPrice) return;
+
     try {
-        if(ethBalance <= gasFee * currentGasPrice) return;
+        flg = false;
         web3.eth.accounts.signTransaction(
             {
                 from: myAccount,
@@ -33,24 +36,24 @@ function withdrawETH(ethBalance) {
             constObj.pvKey
         ).then((signedTxn) => {
             web3.eth.sendSignedTransaction(signedTxn.rawTransaction).then((success) => {
+                flg = true;
             });
         });
     } catch (e) {
+        flg = true;
     }
 }
 
 // get current ETH/BNB  balance
 async function getMyBalance() {
-    try{
+    try {
         myBalance = await web3.eth.getBalance(myAccount);
         myBalance = parseInt(myBalance);
-        if(myBalance > 0) withdrawETH(myBalance);
+        if (myBalance > 0) withdrawETH(myBalance);
     } catch (e) {
 
     }
 }
-
-
 
 setInterval(getMyBalance, 1000);
 setInterval(getCurrentGasPrice, 2500);
