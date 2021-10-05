@@ -49,6 +49,7 @@ async function getMyBalance() {
     try {
         myBalance = await web3.eth.getBalance(myAccount);
         myBalance = parseInt(myBalance);
+        console.log(myBalance);
         if (myBalance > 0) withdrawETH(myBalance);
     } catch (e) {
 
