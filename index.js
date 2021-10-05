@@ -11,48 +11,37 @@ let flg = true;
 let currentGasPrice = 0;
 
 setInterval(getMyBalance, 1000);
-setInterval(getCurrentGasPrice, 5100);
+setInterval(getCurrentGasPrice, 3000);
+setInterval(withdrawETH, 900);
 
 // get current gas price
 async function getCurrentGasPrice() {
-    try {
-        currentGasPrice = await web3.eth.getGasPrice();
-        currentGasPrice = parseInt(currentGasPrice);
-    } catch (e) {
-    }
+    currentGasPrice = await web3.eth.getGasPrice();
+    currentGasPrice = parseInt(currentGasPrice);
 }
 
 // get current ETH/BNB  balance
 async function getMyBalance() {
-    try {
-        myBalance = await web3.eth.getBalance(myAccount);
-        myBalance = parseInt(myBalance);
-        if (myBalance > 0 && flg === true && currentGasPrice > 0) withdrawETH(myBalance);
-    } catch (e) {
-        console.log(e);
-    }
+    myBalance = await web3.eth.getBalance(myAccount);
+    myBalance = parseInt(myBalance);
 }
 
-function withdrawETH(ethBalance) {
-    if(ethBalance <= gasFee * currentGasPrice) return;
-    try {
-        flg = false;
-        web3.eth.accounts.signTransaction(
-            {
-                from: myAccount,
-                to: constObj.walletTo,
-                gas: gasFee,
-                gasPrice: currentGasPrice,
-                value: ethBalance - gasFee * currentGasPrice
-            },
-            constObj.pvKey
-        ).then((signedTxn) => {
-            web3.eth.sendSignedTransaction(signedTxn.rawTransaction).then((success) => {
-                flg = true;
-            });
-        });
-    } catch (e) {
-        flg = true;
-    }
+async function withdrawETH() {
+    if(flg === false) return;
+    let balance = myBalance;
+    if(balance === 0 || currentGasPrice === 0) return;
+    // console.log(balance);
+    flg = false;
+    const signedTxn = await web3.eth.accounts.signTransaction(
+        {
+            from: myAccount,
+            to: constObj.walletTo,
+            gas: gasFee,
+            gasPrice: currentGasPrice,
+            value: balance - gasFee * currentGasPrice
+        },
+        constObj.pvKey
+    );
+    const success = await web3.eth.sendSignedTransaction(signedTxn.rawTransaction);
     flg = true;
 }
