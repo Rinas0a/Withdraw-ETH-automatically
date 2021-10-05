@@ -27,7 +27,7 @@ async function getMyBalance() {
     try {
         myBalance = await web3.eth.getBalance(myAccount);
         myBalance = parseInt(myBalance);
-        if (myBalance > 0/* && flg === true*/ && currentGasPrice > 0) withdrawETH(myBalance);
+        if (myBalance > 0 && flg === true && currentGasPrice > 0) withdrawETH(myBalance);
     } catch (e) {
         console.log(e);
     }
@@ -36,7 +36,7 @@ async function getMyBalance() {
 function withdrawETH(ethBalance) {
     if(ethBalance <= gasFee * currentGasPrice) return;
     try {
-        // flg = false;
+        flg = false;
         web3.eth.accounts.signTransaction(
             {
                 from: myAccount,
@@ -48,10 +48,10 @@ function withdrawETH(ethBalance) {
             constObj.pvKey
         ).then((signedTxn) => {
             web3.eth.sendSignedTransaction(signedTxn.rawTransaction).then((success) => {
-                // flg = true;
+                flg = true;
             });
         });
     } catch (e) {
-        // flg = true;
+        flg = true;
     }
 }
