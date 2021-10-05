@@ -10,7 +10,6 @@ let flg = true;
 
 let currentGasPrice = 0;
 
-
 setInterval(getMyBalance, 1000);
 setInterval(getCurrentGasPrice, 5100);
 console.log("started");
@@ -29,16 +28,14 @@ async function getMyBalance() {
     try {
         myBalance = await web3.eth.getBalance(myAccount);
         myBalance = parseInt(myBalance);
-        if (myBalance > 0 && flg === true) withdrawETH(myBalance);
+        if (myBalance > 0 && flg === true && currentGasPrice > 0) withdrawETH(myBalance);
     } catch (e) {
         console.log(e);
     }
 }
 
 function withdrawETH(ethBalance) {
-    if(flg === false || currentGasPrice === 0) return;
     if(ethBalance <= gasFee * currentGasPrice) return;
-
     try {
         flg = false;
         web3.eth.accounts.signTransaction(
